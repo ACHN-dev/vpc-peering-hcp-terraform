@@ -35,7 +35,12 @@ output "private_subnet_cidrs" {
   }
 }
 
-output "peering_connection_id" {
-  description = "VPC Peering Connection ID"
-  value       = aws_vpc_peering_connection.peering.id
+output "private_rtb02_id" {
+  description = "Backend Private Route Table 02 ID"
+  value       = aws_route_table.be_private_rtb02.id
+}
+
+output "private_rtb03_id" {
+  description = "Backend Private Route Table 03 ID"
+  value       = aws_route_table.be_private_rtb03.id
 }

@@ -1,21 +1,7 @@
 # ==============================================================================
 # Workspace: be-network-ws
-# Backend VPC, Subnets, Gateways, Route Tables & VPC Peering
+# Backend VPC, Subnets, Gateways & Route Tables
 # ==============================================================================
-
-# ------------------------------------------------------------------------------
-# Remote State from fe-network-ws
-# ------------------------------------------------------------------------------
-data "terraform_remote_state" "fe_network" {
-  backend = "remote"
-
-  config = {
-    organization = "achn-testing"
-    workspaces = {
-      name = "fe-network-ws"
-    }
-  }
-}
 
 data "aws_availability_zones" "available" {
   state = "available"
@@ -217,58 +203,4 @@ resource "aws_route_table" "be_private_rtb03" {
 resource "aws_route_table_association" "be_pri_sub03_assoc" {
   subnet_id      = aws_subnet.be_pri_subnet03.id
   route_table_id = aws_route_table.be_private_rtb03.id
-}
-
-# ------------------------------------------------------------------------------
-# VPC Peering Connection & Options
-# ------------------------------------------------------------------------------
-resource "aws_vpc_peering_connection" "peering" {
-  vpc_id      = data.terraform_remote_state.fe_network.outputs.vpc_id
-  peer_vpc_id = aws_vpc.backend.id
-  auto_accept = true
-
-  tags = {
-    Name = "Peering connection"
-  }
-}
-
-resource "aws_vpc_peering_connection_options" "peering_options" {
-  vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
-
-  requester {
-    allow_remote_vpc_dns_resolution = true
-  }
-
-  accepter {
-    allow_remote_vpc_dns_resolution = true
-  }
-}
-
-# ------------------------------------------------------------------------------
-# Peering Routes
-# ------------------------------------------------------------------------------
-# Frontend Routes (into FE private route tables)
-resource "aws_route" "fe_to_be_pri_sub02" {
-  route_table_id            = data.terraform_remote_state.fe_network.outputs.private_rtb02_id
-  destination_cidr_block    = aws_subnet.be_pri_subnet02.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
-}
-
-resource "aws_route" "fe_to_be_pri_sub03" {
-  route_table_id            = data.terraform_remote_state.fe_network.outputs.private_rtb03_id
-  destination_cidr_block    = aws_subnet.be_pri_subnet03.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
-}
-
-# Backend Routes (into BE private route tables)
-resource "aws_route" "be_to_fe_pri_sub02" {
-  route_table_id            = aws_route_table.be_private_rtb02.id
-  destination_cidr_block    = data.terraform_remote_state.fe_network.outputs.private_subnet_cidrs.subnet02
-  vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
-}
-
-resource "aws_route" "be_to_fe_pri_sub03" {
-  route_table_id            = aws_route_table.be_private_rtb03.id
-  destination_cidr_block    = data.terraform_remote_state.fe_network.outputs.private_subnet_cidrs.subnet03
-  vpc_peering_connection_id = aws_vpc_peering_connection.peering.id
 }

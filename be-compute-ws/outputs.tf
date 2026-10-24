@@ -27,3 +27,8 @@ output "private_key_pem" {
   value       = tls_private_key.ssh_key.private_key_pem
   sensitive   = true
 }
+
+output "ssm_fetch_key_command" {
+  description = "Command to fetch backend private key from AWS SSM"
+  value       = "aws ssm get-parameter --name '/vpc-peering/be/private_key_pem' --with-decryption --query 'Parameter.Value' --output text > be-key.pem && chmod 400 be-key.pem"
+}

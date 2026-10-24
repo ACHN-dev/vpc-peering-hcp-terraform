@@ -1,0 +1,181 @@
+name: "VPC Peering Multi-Workspace VCS Pipeline"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  vpc_peering_vcs:
+    name: "VPC Peering Orchestration (Workspaces 1 -> 7)"
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'ap-southeast-1' }}
+      TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.15.0"
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      # -------------------------------------------------------------
+      # 1. Frontend Network (fe-network-ws)
+      # -------------------------------------------------------------
+      - name: "[1/7] fe-network-ws: Init & Validate"
+        run: |
+          cd fe-network-ws
+          terraform init
+          terraform validate
+
+      - name: "[1/7] fe-network-ws: Plan"
+        if: github.event_name == 'pull_request'
+        run: |
+          cd fe-network-ws
+          terraform plan -no-color
+
+      - name: "[1/7] fe-network-ws: Apply"
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd fe-network-ws
+          terraform apply -auto-approve
+
+      # -------------------------------------------------------------
+      # 2. Backend Network (be-network-ws)
+      # -------------------------------------------------------------
+      - name: "[2/7] be-network-ws: Init & Validate"
+        run: |
+          cd be-network-ws
+          terraform init
+          terraform validate
+
+      - name: "[2/7] be-network-ws: Plan"
+        if: github.event_name == 'pull_request'
+        run: |
+          cd be-network-ws
+          terraform plan -no-color
+
+      - name: "[2/7] be-network-ws: Apply"
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd be-network-ws
+          terraform apply -auto-approve
+
+      # -------------------------------------------------------------
+      # 3. VPC Peering (peering-ws)
+      # -------------------------------------------------------------
+      - name: "[3/7] peering-ws: Init & Validate"
+        run: |
+          cd peering-ws
+          terraform init
+          terraform validate
+
+      - name: "[3/7] peering-ws: Plan"
+        if: github.event_name == 'pull_request'
+        run: |
+          cd peering-ws
+          terraform plan -no-color
+
+      - name: "[3/7] peering-ws: Apply"
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd peering-ws
+          terraform apply -auto-approve
+
+      # -------------------------------------------------------------
+      # 4. Frontend Security (fe-security-ws)
+      # -------------------------------------------------------------
+      - name: "[4/7] fe-security-ws: Init & Validate"
+        run: |
+          cd fe-security-ws
+          terraform init
+          terraform validate
+
+      - name: "[4/7] fe-security-ws: Plan"
+        if: github.event_name == 'pull_request'
+        run: |
+          cd fe-security-ws
+          terraform plan -no-color
+
+      - name: "[4/7] fe-security-ws: Apply"
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd fe-security-ws
+          terraform apply -auto-approve
+
+      # -------------------------------------------------------------
+      # 5. Backend Security (be-security-ws)
+      # -------------------------------------------------------------
+      - name: "[5/7] be-security-ws: Init & Validate"
+        run: |
+          cd be-security-ws
+          terraform init
+          terraform validate
+
+      - name: "[5/7] be-security-ws: Plan"
+        if: github.event_name == 'pull_request'
+        run: |
+          cd be-security-ws
+          terraform plan -no-color
+
+      - name: "[5/7] be-security-ws: Apply"
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd be-security-ws
+          terraform apply -auto-approve
+
+      # -------------------------------------------------------------
+      # 6. Frontend Compute (fe-compute-ws)
+      # -------------------------------------------------------------
+      - name: "[6/7] fe-compute-ws: Init & Validate"
+        run: |
+          cd fe-compute-ws
+          terraform init
+          terraform validate
+
+      - name: "[6/7] fe-compute-ws: Plan"
+        if: github.event_name == 'pull_request'
+        run: |
+          cd fe-compute-ws
+          terraform plan -no-color
+
+      - name: "[6/7] fe-compute-ws: Apply"
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd fe-compute-ws
+          terraform apply -auto-approve
+
+      # -------------------------------------------------------------
+      # 7. Backend Compute (be-compute-ws)
+      # -------------------------------------------------------------
+      - name: "[7/7] be-compute-ws: Init & Validate"
+        run: |
+          cd be-compute-ws
+          terraform init
+          terraform validate
+
+      - name: "[7/7] be-compute-ws: Plan"
+        if: github.event_name == 'pull_request'
+        run: |
+          cd be-compute-ws
+          terraform plan -no-color
+
+      - name: "[7/7] be-compute-ws: Apply"
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          cd be-compute-ws
+          terraform apply -auto-approve

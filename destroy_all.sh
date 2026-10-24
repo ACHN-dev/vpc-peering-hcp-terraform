@@ -5,8 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 echo "=========================================================="
-echo " AWS Intra-Region VPC Peering: Destroy All 6 Workspaces"
-echo " (Reverse Order: Compute -> Security -> Network)"
+echo " AWS Intra-Region VPC Peering: Destroy All 7 Workspaces"
+echo " (Reverse Order: Compute -> Security -> Peering -> Network)"
 echo "=========================================================="
 
 WORKSPACES=(
@@ -14,6 +14,7 @@ WORKSPACES=(
   "fe-compute-ws"
   "be-security-ws"
   "fe-security-ws"
+  "peering-ws"
   "be-network-ws"
   "fe-network-ws"
 )

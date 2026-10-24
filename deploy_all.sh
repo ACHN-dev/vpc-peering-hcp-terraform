@@ -5,12 +5,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 echo "=========================================================="
-echo " AWS Intra-Region VPC Peering: Deploy All 6 Workspaces"
+echo " AWS Intra-Region VPC Peering: Deploy All 7 Workspaces"
 echo "=========================================================="
 
 WORKSPACES=(
   "fe-network-ws"
   "be-network-ws"
+  "peering-ws"
   "fe-security-ws"
   "be-security-ws"
   "fe-compute-ws"

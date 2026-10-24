@@ -80,6 +80,18 @@ resource "local_file" "private_key" {
   file_permission = "0400"
 }
 
+# Store Private Key in AWS SSM Parameter Store for VCS runners
+resource "aws_ssm_parameter" "fe_private_key" {
+  name        = "/vpc-peering/fe/private_key_pem"
+  description = "Frontend Private SSH Key for VPC Peering instances (Managed by VCS)"
+  type        = "SecureString"
+  value       = tls_private_key.ssh_key.private_key_pem
+
+  tags = {
+    Name = "fe-vpc-peering-key"
+  }
+}
+
 # ------------------------------------------------------------------------------
 # Frontend EC2 Instances
 # ------------------------------------------------------------------------------
