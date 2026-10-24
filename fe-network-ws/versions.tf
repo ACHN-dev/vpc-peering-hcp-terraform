@@ -5,7 +5,7 @@ terraform {
     organization = "achn-testing"
 
     workspaces {
-      name = "fe-network-ws"
+      name = "vcs-fe-network"
     }
   }
 
