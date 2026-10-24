@@ -42,5 +42,5 @@ done
 
 echo ""
 echo "=========================================================="
-echo " 🎉 All 6 Workspaces Successfully Destroyed!"
+echo " 🎉 All 7 Workspaces Successfully Destroyed!"
 echo "=========================================================="

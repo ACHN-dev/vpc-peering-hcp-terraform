@@ -41,8 +41,12 @@ done
 
 echo ""
 echo "=========================================================="
-echo " 🎉 All 6 Workspaces Successfully Deployed!"
+echo " 🎉 All 7 Workspaces Successfully Deployed!"
 echo "=========================================================="
+
+echo ""
+echo "--- VPC Peering Outputs ---"
+cd "$SCRIPT_DIR/peering-ws" && terraform output
 
 echo ""
 echo "--- Frontend Compute Outputs ---"

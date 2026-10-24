@@ -21,3 +21,11 @@ override.tf.json
 
 # Sensitive SSH Keys
 *.pem
+
+# Environment & Secret files
+*.env
+.env*
+
+# OS metadata
+.DS_Store
+Thumbs.db
